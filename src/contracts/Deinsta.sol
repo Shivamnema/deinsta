@@ -38,10 +38,23 @@ contract Deinsta {
 
     }
 
+    event ImageTipped (
+        uint id,
+        string hash,
+        string description,
+        uint tipAmount,
+        address payable author
+    );
     //Tip Images
     function tipImageOwner (uint _id) public payable {
+
+        require(_id > 0 && _id <= imageCount);
+
         Image memory _image = images[_id];
         address payable _author =_image.author;
-        _author.transfer(1 ether);
+        address(_author).transfer(msg.value);
+        _image.tipAmount = _image.tipAmount + msg.value;
+
+        emit ImageTipped(_id, _image.hash, _image.description, _image.tipAmount, _author);
     }
 }
